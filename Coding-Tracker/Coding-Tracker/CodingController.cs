@@ -93,15 +93,15 @@ class CodingController
         }
     }
 
-    public static void Update(int ID, DateTime startTime, DateTime endTime)
+    public static void Update(int ID, DateTime startTime, DateTime endTime, string duration)
     {
 
 
         using (var connection = new SqliteConnection(connectionString))
         {
 
-            int rowsAffected = connection.Execute("UPDATE coding_tracker SET StartTime = @StartTime, EndTime = @EndTime WHERE ID = @Id",
-               new { Id = ID, StartTime = startTime, EndTime = endTime });
+            int rowsAffected = connection.Execute("UPDATE coding_tracker SET StartTime = @StartTime, EndTime = @EndTime, Duration = @Duration WHERE ID = @Id",
+               new { Id = ID, StartTime = startTime, EndTime = endTime, Duration = duration });
 
             if (rowsAffected == 0)
             {

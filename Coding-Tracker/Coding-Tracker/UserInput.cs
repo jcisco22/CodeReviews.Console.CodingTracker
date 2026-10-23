@@ -73,10 +73,13 @@ public class Input
 
         startTime = GeTimeInput("Please enter the start Time Format: (HH:mm), Or enter 0 to exit.");
         endTime = GeTimeInput("Please enter the end Time Format: (HH:mm), Or enter 0 to exit.");
-
-        CodingController.Insert(startTime, endTime);
-
-    }
+        while (endTime <= startTime)
+        {
+            Console.WriteLine("End time must be after start time.");
+            endTime = GeTimeInput("Please enter the end time (HH:mm), or enter 0 to exit.");
+        }
+            CodingController.Insert(startTime, endTime);
+        }
 
     public static void DeleteInput()
     {
@@ -88,9 +91,7 @@ public class Input
         int id = Validation.ValidateId(Console.ReadLine());
 
         CodingController.Delete(id);
-
     }
-
 
     public static void UpdateInput()
     {
@@ -107,12 +108,11 @@ public class Input
 
         Console.WriteLine("Please enter a End Time ID to Update.");
 
-        DateTime endTime = Validation.ValidateTime(Console.ReadLine());
+        DateTime endTime = Validation.ValidateEndTime(startTime);
 
-        CodingController.Update(ID, startTime, endTime);
+        string duration = (endTime - startTime).ToString();
+
+        CodingController.Update(ID, startTime, endTime, duration);
 
     }
-
-
-
 }
