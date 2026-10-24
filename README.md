@@ -1,37 +1,44 @@
-## Coding Tracker
+# Coding Tracker
 
 
 The coding tracker is a C# console application I'm building to log and manage the duration of code sessions.
 
-I built this as part of the C# academy curriculum.
+I built this as part of the C# Academy curriculum.
 
 
 ## What it does:
 
-Log coding sessions with a start time, end time, and auto calculated duration
+Log coding sessions with a start time, end time, and auto calculated duration including date
 
 View all sessions in a formatted table
 
-Insert, update, and delete sessions
+Insert, update, and delete and view created sessions
 
 Input validation enforcing a strict date/time format
 
 
+## How to run
 
-## How to run in terminal:
+### Prerequisites
 
-cd Coding-Tracker
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
 
+### Steps
+
+```bash
+git clone https://github.com/jcisco22/CodeReviews.Console.CodingTracker.git
+cd CodeReviews.Console.CodingTracker/Coding-Tracker/Coding-Tracker
 dotnet run
+```
 
-.NET 10 SDK is needed to run the program
+The database file is created automatically on first run.
 
 
 ## Tech stack:
 
 C# — .NET 10 console app
 
-SQLite — local file based database, packeged as Microsoft.Data.Sqlite
+SQLite — local file based database, packaged as Microsoft.Data.Sqlite
 
 Dapper — Object relational mapper used for mapping query results to C# objects
 
@@ -44,30 +51,48 @@ When running the program the user will be greeted with a menu.
 
 The menu presents the user with five options shown in the image below with the first option being to close the program.
 
-The rest of the options are Create Read Update and Delete operations.
+The rest of the options are Create Read Update and Delete operations labelled from 1 - 4.
 
 
-![Main Menu](images/Menu.png)
+![Main Menu](Coding-Tracker/Coding-Tracker/Images/Menu.png)
 
 
 The First CRUD operation is to view the coding tracker records:
 
-![Viewing a record](images/View.png)
+The table consists of the four properties Id, Start Time, End Time and Duration.
+
+![Viewing a record](Coding-Tracker/Coding-Tracker/Images/ViewSpectre.png)
+
 
 
 The second CRUD operation is to insert a record:
 
-![Inserting a record](images/Insert.png)
+The insert menu asks a user to enter a start and end time in the format provided including the date.
+
+If successfully inserted, a message showing the record was inserted is shown, followed by a return to the main menu option.
+
+![Inserting a record](Coding-Tracker/Coding-Tracker/Images/Insert.png)
+
 
 
 The third CRUD operation is to delete a record:
 
-![Deleting a record](images/Delete.png)
+The program shows a list of the records in the database and prompts the user to enter the id number of the record to delete.
+
+If successfully deleted, a message showing the record was deleted is shown, followed by a return to the main menu option.
+
+![Deleting a record](Coding-Tracker/Coding-Tracker/Images/Delete.png)
 
 
 The fourth and final operation is the update record feature:
 
-![Updating a record](images/Update.png)
+The program prompts the user to enter the id of the record they'd like updated then asks the user to enter a new start and end time.
+
+If successfully updated, a message showing the record was updated is shown, followed by a return to the main menu option.
+
+![Updating a record](Coding-Tracker/Coding-Tracker/Images/Update.png)
+
+
 
 
 ## Project structure:
@@ -81,7 +106,7 @@ CodingController.cs is for database operations, all CRUD methods live inside thi
 
 UserInput.cs is for user interaction, this class contains the switch menu, input collection methods and contains methods that call the CodingController class.
 
-Validation.cs is for input validation, this class holds the ValidateTime & ValidateId methods used for date format and ID validation.
+Validation.cs is for input validation, this class holds the ValidateTime, ValidateId and ValidateEndTime methods used for date format and ID validation.
 
 appsettings.json is for configuration, this file stores the database connection string.
 
@@ -99,48 +124,15 @@ UserInput talks to the user, displays menus, collects input, calls controller me
 
 CodingController talks to the database, receives parameters, runs SQL.
 
-Validation checks input, never interacts with the user directly beyond error messages.
+Validation checks input. When input is invalid, it shows an error message and asks the user to try again.
 
-CodingSession is the model, Containing the properties used throughout the program.
+CodingSession is the model, containing the properties used throughout the program.
 
 
 ## Database Layout:
 
 
-
-
-Id is of type int, this is the primary key of the data, it is set to auto-increment.
-
-
-
-StartTime is of type string, the format of the start time is dd-MM-yyyy HH:mm.
-
-
-
-EndTime	is of type string, it follows the same format of StartTime which is dd-MM-yyyy HH:mm.
-
-
-
-Duration is of type string and is calculated from EndTime - StartTime, stored as string.
-
-
-
-SQLite does not have set DateTime or TimeSpan types.
-
-
-
-Dates are stored as strings and parsed in C#. 
-
-
-
-Duration is calculated as a TimeSpan then stored as a string.
-
-
-
 The table is created on startup if it does not already exist:
-
-
-
 
 
 ````
@@ -153,35 +145,80 @@ Duration TEXT
 
 ````
 
+Id is of type INTEGER, this is the primary key of the data, it is set to auto-increment.
+
+
+
+StartTime is of type TEXT, the format of the start time is dd-MM-yyyy HH:mm.
+
+
+
+EndTime	is of type TEXT, it follows the same format of StartTime which is dd-MM-yyyy HH:mm.
+
+
+
+Duration is calculated as EndTime - StartTime, which gives a TimeSpan. SQLite has no built in DateTime or TimeSpan types, so the duration is converted to a string and stored as TEXT.
+
+
+
+Dates are stored as strings and parsed in C#. 
+
 
 
 ## Duration calculation:
 
-Duration is not collected from the user. It is a product of endTime minus startTime:
+Duration is not entered by the user. Subtracting one DateTime from another gives a TimeSpan which is converted to a string before being stored in SQLite:
 
 ```
 string duration = (endTime - startTime).ToString();
 ```
-When a value of type DateTime is subtracted its result returns as a TimeSpan type.
-
-This is converted to a string before being stored in SQLite.
-
 
 ## Validation:
 
-Date input is validated with DateTime.TryParseExact, enforcing the format `dd-MM-yyyy HH:mm`.
+Date input is validated with DateTime.TryParseExact, enforcing the format "dd-MM-yyyy HH:mm".
 
-The loop keeps asking until valid input is received:
+The ValidateTime method ensures that the user enters the correct format by looping until the correct format is received:
+
 
 ```
-while (!DateTime.TryParseExact(input, "dd-MM-yyyy HH:mm", null, DateTimeStyles.None, out result))
-{
-    Console.WriteLine("Invalid format. Try again (dd-MM-yyyy HH:mm): ");
-    input = Console.ReadLine();
-}
+    public static DateTime ValidateTime(string getTime)
+    {
+        DateTime result;
+           
+        while (!DateTime.TryParseExact(getTime, "dd-MM-yyyy HH:mm", null, DateTimeStyles.None, out result))
+        {
+            Console.WriteLine("Invalid format. Try again (dd-MM-yyyy HH:mm): ");
+            getTime = Console.ReadLine();
+        }
+
+        return result;
+    }
 ```
 
 ID input is validated with int.TryParse, rejecting non numeric input and values less than or equal to zero.
+
+## End time validation:
+
+ValidateEndTime was added after code review pointed out that an end time could be earlier than the start time, producing a negative duration. It takes the already-validated start time and uses a while loop to keep asking for an end time until it is later than the start, preventing zero or negative durations.
+
+
+```
+    public static DateTime ValidateEndTime(DateTime startTime)
+    {
+        DateTime endTime = ValidateTime(Console.ReadLine());
+
+        while (endTime <= startTime)
+        {
+         Console.WriteLine("End time must be after start time.\nPlease try again (dd-MM-yyyy HH:mm): ");
+         endTime = ValidateTime(Console.ReadLine());
+        }
+
+        return endTime;
+    }
+
+```
+
+
 
 ## Rows affected: 
 
@@ -209,14 +246,13 @@ connection.Execute(sql, parameters) — runs INSERT, UPDATE, DELETE operations.
 
 Parameters are passed as anonymous objects and being assigned value: new { Id = id, StartTime = startTime }.
 
-The property names on the anonymous object must match the `@placeholder` names in the SQL exactly or values won't be passed over and values will be null.
+The property names on the anonymous object must match the @placeholder names in the SQL exactly or values won't be passed over and values will be null.
 
 
 ### Connection string:
 
-The database connection string is stored in appsettings.json rather than being hardcoded, this allows us to reference it with ease throughout the program.
+The database connection string is stored in appsettings.json rather than being hardcoded. This keeps configuration separate from code, so the database location can be changed without editing or recompiling the program.
 
-It' stored in appsettings.json and read at startup via ConfigurationBuilder.
 
 ```
 {
@@ -251,11 +287,30 @@ If the connection string is missing, GetConnectionString returns null. The ?? op
   </None>
 </ItemGroup>
 ```
+This configuration in the .csproj file ensures that appsettings.json is copied to the build output directory whenever the project is built. This is necessary because the application needs to access the file at runtime to retrieve the database connection string. Without the file in the output directory, the application may be unable to load its configuration.
 
 
-## Limitations:
 
-When running the program and viewing records I noticed that id's that were deleted affected the new id number, the pre-existing id numbers could not be used again.
+## Reflection:
+
+When initially submitting my project for review, my project could not be approved due to an error with the Duration field. I had correctly calculated and stored the duration when a record was being inserted but the update method would only update the StartTime and EndTime fields leaving out duration which is the thing we are actually tracking. This meant the record could contain an outdated duration after an update. To fix this issue I added duration as a parameter to the update method and included it in the SQL UPDATE statement. This ensures that StartTime, EndTime and Duration are all updated together when a record is modified.
+
+
+I prematurely committed the program before verifying the issue had been resolved, after running the program I realised that it hadn't. After updating a record and viewing it I noticed that the duration column was still missing as I hadn't updated the UpdateInput method in the UserInput class to assign the duration field the result of EndTime minus StartTime which I did with the line string duration = (endTime - startTime).ToString(); converting it to string as duration is stored as string. After adding this line I ran the program without this issue.
+
+The second issue returned from my code review was end time could be earlier than start time which is a clear problem as it would be calculated as a negative duration. To solve this issue I created a new validation method called ValidateEndTime. The method starts by creating a local variable named endTime and assigning it the value of the ValidateTime method which checks that the user’s input is in the correct format. ValidateEndTime receives the start time as a DateTime parameter, which is used to compare against the end time. A while loop checks whether the end time is earlier than or equal to the start time; if it is, the user is shown an error message and asked to enter the end time again. The loop repeats until a valid end time is entered, and the method then returns it. The insert menu applies the same check inside InsertInput, so the user can still enter 0 to exit.
+
+Overall I think the project taught me a lot, mainly about separation of concerns as well as validation and what ORMs are by using Dapper. I gained a better understanding of how separating input logic from database operations makes code easier to maintain, and how validation helps prevent invalid records from being stored and even accepted. I also learned how Dapper simplifies database interactions by mapping query results to C# objects and allowing SQL queries to be executed directly from the application.
+
+
+## Limitations :
+
+As duration is stored as text, calculations like "total hours coded this week" can’t be calculated in SQLite.
+
+Some CodingController methods write directly to the console. The messages are needed, but displaying them is UserInput’s job, so this breaks separation of concerns. A cleaner design would return a result and let UserInput show the message.
+
+
+
 
 
 
