@@ -4,8 +4,8 @@ class Validation
 {
     public static DateTime ValidateTime(string getTime)
     {
-
         DateTime result;
+           
         while (!DateTime.TryParseExact(getTime, "HH:mm", null, DateTimeStyles.None, out result))
         {
             Console.WriteLine("Invalid format. Try again (HH:mm): ");
@@ -15,7 +15,18 @@ class Validation
         return result;
     }
 
+    public static DateTime ValidateEndTime(DateTime startTime)
+    {
+        DateTime endTime = ValidateTime(Console.ReadLine());
 
+        while (endTime <= startTime)
+        {
+         Console.WriteLine("End time must be after start time.\nPlease try again (dd-MM-yyyy HH:mm): ");
+         endTime = ValidateTime(Console.ReadLine());
+        }
+
+        return endTime;
+    }
     public static int ValidateId(string Input)
     {
         // Console.WriteLine($"Input received: '{Input}'");
@@ -29,9 +40,5 @@ class Validation
         }
 
         return result;
-
     }
-
-
-
 }
