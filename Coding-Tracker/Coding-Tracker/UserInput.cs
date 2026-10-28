@@ -67,8 +67,6 @@ public class Input
     {
         Console.Clear();
 
-
-
         DateTime? startTime = GeTimeInput("Please enter the start Time Format: (dd-MM-yyyy, HH:mm), Or enter 0 to exit.");
         if (startTime == null) return;
 
