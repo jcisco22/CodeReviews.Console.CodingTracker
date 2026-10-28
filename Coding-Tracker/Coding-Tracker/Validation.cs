@@ -2,18 +2,24 @@ using System.Globalization;
 
 class Validation
 {
-    public static DateTime ValidateTime(string getTime)
+public static DateTime ValidateTime(string getTime)
+{
+    DateTime result;
+
+    while (true)
     {
-        DateTime result;
-           
-        while (!DateTime.TryParseExact(getTime, "HH:mm", null, DateTimeStyles.None, out result))
+
+
+        if (DateTime.TryParseExact(getTime, "HH:mm", null,
+            DateTimeStyles.None, out result))
         {
-            Console.WriteLine("Invalid format. Try again (HH:mm): ");
-            getTime = Console.ReadLine();
+            return result;
         }
 
-        return result;
+        Console.WriteLine("Invalid format. Try again (HH:mm): ");
+        getTime = Console.ReadLine();
     }
+}
 
     public static DateTime ValidateEndTime(DateTime startTime)
     {
@@ -29,13 +35,14 @@ class Validation
     }
     public static int ValidateId(string Input)
     {
-        // Console.WriteLine($"Input received: '{Input}'");
-
         int result;
 
         while (!int.TryParse(Input, out result) || (result <= 0))
         {
-            Console.WriteLine("Please enter a valid id");
+
+         if (Input == "0") return 0;
+
+            Console.WriteLine("Please enter a valid id, or press 0 to return to the main menu");
             Input = Console.ReadLine();
         }
 

@@ -86,10 +86,12 @@ public class Input
         Console.Clear();
         CodingController.GetAllRecords();
 
-        Console.WriteLine("Please enter a record ID to delete.\n\n");
+        Console.WriteLine("Please enter a record ID to delete.\n\nOr enter 0 to exit");
+
 
         int id = Validation.ValidateId(Console.ReadLine());
-
+        if (id == 0) return;
+        
         CodingController.Delete(id);
     }
 
@@ -98,17 +100,25 @@ public class Input
         Console.Clear();
         CodingController.GetAllRecords();
 
-        Console.WriteLine("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
+
+        DateTime startTime;
+        DateTime endTime;
+
+        startTime = GeTimeInput("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
+        endTime = GeTimeInput("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
+
+        // Console.WriteLine("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
 
         int ID = Validation.ValidateId(Console.ReadLine());
+        if (ID == 0) return;
         
         Console.WriteLine("Please enter a Start Time ID to Update.");
 
-        DateTime startTime = Validation.ValidateTime(Console.ReadLine());
+        startTime = Validation.ValidateTime(Console.ReadLine());
 
         Console.WriteLine("Please enter a End Time ID to Update.");
 
-        DateTime endTime = Validation.ValidateEndTime(startTime);
+        endTime = Validation.ValidateEndTime(startTime);
 
         string duration = (endTime - startTime).ToString();
 
