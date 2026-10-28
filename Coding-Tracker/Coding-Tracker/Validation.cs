@@ -2,33 +2,30 @@ using System.Globalization;
 
 class Validation
 {
-public static DateTime ValidateTime(string getTime)
-{
-    DateTime result;
-
-    while (true)
+    public static DateTime? ValidateTime(string getTime)
     {
+        DateTime result;
 
-
-        if (DateTime.TryParseExact(getTime, "HH:mm", null,
-            DateTimeStyles.None, out result))
+        while (!DateTime.TryParseExact(getTime, "dd-MM-yyyy HH:mm", null, DateTimeStyles.None, out result))
         {
-            return result;
+            if (getTime == "0") return null;
+
+            Console.WriteLine("Invalid format. Try again (dd-MM-yyyy, HH:mm): \nOr enter 0 to exit. ");
+            getTime = Console.ReadLine();
         }
 
-        Console.WriteLine("Invalid format. Try again (HH:mm): ");
-        getTime = Console.ReadLine();
+        return result;
+
     }
-}
 
-    public static DateTime ValidateEndTime(DateTime startTime)
+    public static DateTime? ValidateEndTime(DateTime startTime)
     {
-        DateTime endTime = ValidateTime(Console.ReadLine());
+        DateTime? endTime = ValidateTime(Console.ReadLine());
 
-        while (endTime <= startTime)
+        while (endTime != null && endTime <= startTime)
         {
-         Console.WriteLine("End time must be after start time.\nPlease try again (dd-MM-yyyy HH:mm): ");
-         endTime = ValidateTime(Console.ReadLine());
+            Console.WriteLine("End time must be after start time. Try again (dd-MM-yyyy, HH:mm), or enter 0 to return to the main menu: ");
+            endTime = ValidateTime(Console.ReadLine());
         }
 
         return endTime;
@@ -40,7 +37,7 @@ public static DateTime ValidateTime(string getTime)
         while (!int.TryParse(Input, out result) || (result <= 0))
         {
 
-         if (Input == "0") return 0;
+            if (Input == "0") return 0;
 
             Console.WriteLine("Please enter a valid id, or press 0 to return to the main menu");
             Input = Console.ReadLine();

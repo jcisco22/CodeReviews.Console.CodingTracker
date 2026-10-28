@@ -54,32 +54,30 @@ public class Input
         }
     }
 
-    public static DateTime GeTimeInput(string message)
+    public static DateTime? GeTimeInput(string message)
     {
         Console.WriteLine(message);
         string getTime = Console.ReadLine();
 
-        if (getTime == "0") GetUserInput();
-
         return Validation.ValidateTime(getTime);
+
     }
 
     public static void InsertInput()
     {
         Console.Clear();
 
-        DateTime startTime;
-        DateTime endTime;
 
-        startTime = GeTimeInput("Please enter the start Time Format: (HH:mm), Or enter 0 to exit.");
-        endTime = GeTimeInput("Please enter the end Time Format: (HH:mm), Or enter 0 to exit.");
-        while (endTime <= startTime)
-        {
-            Console.WriteLine("End time must be after start time.");
-            endTime = GeTimeInput("Please enter the end time (HH:mm), or enter 0 to exit.");
-        }
-            CodingController.Insert(startTime, endTime);
-        }
+
+        DateTime? startTime = GeTimeInput("Please enter the start Time Format: (dd-MM-yyyy, HH:mm), Or enter 0 to exit.");
+        if (startTime == null) return;
+
+        DateTime? endTime = GeTimeInput("Please enter the end Time Format: (dd-MM-yyyy, HH:mm), Or enter 0 to exit.");
+        if (endTime == null) return;
+
+
+        CodingController.Insert(startTime.Value, endTime.Value);
+    }
 
     public static void DeleteInput()
     {
@@ -91,7 +89,7 @@ public class Input
 
         int id = Validation.ValidateId(Console.ReadLine());
         if (id == 0) return;
-        
+
         CodingController.Delete(id);
     }
 
@@ -100,29 +98,20 @@ public class Input
         Console.Clear();
         CodingController.GetAllRecords();
 
-
-        DateTime startTime;
-        DateTime endTime;
-
-        startTime = GeTimeInput("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
-        endTime = GeTimeInput("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
-
-        // Console.WriteLine("Please type Id of the record you want to update. Type 0 to return to main menu.\n\n");
-
+        Console.WriteLine("Please type the Id of the record you want to update, or enter 0 to return to the main menu.");
         int ID = Validation.ValidateId(Console.ReadLine());
         if (ID == 0) return;
-        
-        Console.WriteLine("Please enter a Start Time ID to Update.");
 
-        startTime = Validation.ValidateTime(Console.ReadLine());
+        Console.WriteLine("Please enter the new start time (dd-MM-yyyy, HH:mm), or enter 0 to return to the main menu.");
+        DateTime? startTime = Validation.ValidateTime(Console.ReadLine());
+        if (startTime == null) return;
 
-        Console.WriteLine("Please enter a End Time ID to Update.");
+        Console.WriteLine("Please enter the new end time (dd-MM-yyyy, HH:mm), or enter 0 to return to the main menu.");
+        DateTime? endTime = Validation.ValidateEndTime(startTime.Value);
+        if (endTime == null) return;
 
-        endTime = Validation.ValidateEndTime(startTime);
+        string duration = (endTime.Value - startTime.Value).ToString();
 
-        string duration = (endTime - startTime).ToString();
-
-        CodingController.Update(ID, startTime, endTime, duration);
-
+        CodingController.Update(ID, startTime.Value, endTime.Value, duration);
     }
 }
