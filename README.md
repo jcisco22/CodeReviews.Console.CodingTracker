@@ -302,6 +302,8 @@ The second issue returned from my code review was end time could be earlier than
 
 Overall I think the project taught me a lot, mainly about separation of concerns as well as validation and what ORMs are by using Dapper. I gained a better understanding of how separating input logic from database operations makes code easier to maintain, and how validation helps prevent invalid records from being stored and even accepted. I also learned how Dapper simplifies database interactions by mapping query results to C# objects and allowing SQL queries to be executed directly from the application.
 
+Refactoring for the time propmts was a little different as the ValidateTime and ValidateEndTime methods return types were DateTime, returning 0 wasnt an option here. I needed a value that could mean nothing, so I changed ValidateTime and ValidateEndTime to return a nullable DateTime?. If the user enters 0, these methods return null, and InsertInput and UpdateInput return to the main menu when they receive it. While making this change, I also removed a call to GetUserInput from GeTimeInput, which had been opening a new menu on top of the existing one. Changing the DateTime methods to DateTime? in the validation class meant i had to do it throughout the program.Lastly I updated InsertInput to use ValidateEndTime instead of its own copy of the end time check.
+
 
 ## Limitations :
 
